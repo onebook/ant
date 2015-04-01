@@ -1,0 +1,19 @@
+{
+  "name": "ant",
+  "main": "ant.js",
+  "version": "0.1.0",
+  "homepage": "https://github.com/onebook/ant",
+  "authors": [
+    "haoxin <coderhaoxin@outlook.com>"
+  ],
+  "keywords": [
+    "gather",
+    "data"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "example",
+    "**/.*",
+    "test"
+  ]
+}
