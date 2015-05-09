@@ -6,15 +6,17 @@
 ```
 
 ```js
-ant.trigger(id, function(event) {
+import { trigger, gather } from 'ant'
+
+trigger('id1', function(event) {
   // do ...
 })
 
-let events = ant.gather(id)
+let events = gather(id)
 
-ant.all = function(event, id) {
+trigger('*', function(event, id, type) {
   // do ...
-}
+})
 ```
 
 ### License

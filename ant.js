@@ -1,81 +1,87 @@
-(function(win) {
-  'use strict';
+'use strict'
 
-  if (!win.ant) {
-    win.ant = {
-      trigger: trigger,
-      gather: gather
-    };
+var store = {}
+
+function trigger(id, fn) {
+  if (!store[id]) {
+    store[id] = {}
   }
+  store[id].hook = fn
+}
 
-  var data = {};
+function gather(id) {
+  return store[id] && store[id].events
+}
 
-  function trigger(id, fn) {
-    if (!data[id]) {
-      data[id] = {};
-    }
-    data[id].hook = fn;
-  }
+parse()
 
-  function gather(id) {
-    return data[id] && data[id].events;
-  }
+/**
+ * private
+ */
 
-  parse();
-  // private
-  function parse() {
-    var body = document.querySelector('body');
-    getAntNodes(body);
-  }
+function parse() {
+  var body = document.querySelector('body')
+  getAntNodes(body)
+}
 
-  function getAntNodes(node) {
-    var nodes = node.childNodes;
-    if (nodes && nodes.length) {
-      for (var i = 0; i < nodes.length; i++) {
-        getAntAttrs(nodes[i]);
-        getAntNodes(nodes[i]);
-      }
+function getAntNodes(node) {
+  var nodes = node && node.childNodes
+  if (nodes && nodes.length) {
+    for (var i = 0; i < nodes.length; i++) {
+      getAntAttrs(nodes[i])
+      getAntNodes(nodes[i])
     }
   }
+}
 
-  function getAntAttrs(node) {
-    var attrs = node.attributes;
-    if (attrs && attrs.length) {
-      var k, v;
-      for (var i = 0; i < attrs.length; i++) {
-        k = attrs[i] && attrs[i].name;
-        if (k && k.indexOf('ant-') === 0) {
-          v = node.getAttribute(k);
-          handle(node, k, v);
-        }
+function getAntAttrs(node) {
+  var attrs = node && node.attributes
+  if (attrs && attrs.length) {
+    var k, v
+    for (var i = 0; i < attrs.length; i++) {
+      k = attrs[i] && attrs[i].name
+      if (k && k.indexOf('ant-') === 0) {
+        v = node.getAttribute(k)
+        handle(node, k, v)
       }
     }
   }
+}
 
-  function handle(node, key, value) {
-    var type = key.split('-')[1] || 'click';
-    node.addEventListener(type, function(e) {
-      if (!data[value]) {
-        data[value] = {
-          events: []
-        };
+/**
+ * @param {dom} node
+ * @param {String} type
+ * @param {String} id
+ */
+function handle(node, type, id) {
+  type = type.split('-')[1] || 'click'
+  node.addEventListener(type, function(e) {
+    if (!store[id]) {
+      store[id] = {
+        events: []
       }
-      if (!data[value].events) {
-        data[value].events = [];
-      }
+    }
 
-      data[value].events.push({
-        event: e,
-        time: Date.now()
-      });
+    var obj = store[id]
 
-      if (data[value].hook) {
-        data[value].hook(e);
-      }
-      if (typeof win.ant.all === 'function') {
-        win.ant.all(e, value);
-      }
-    });
-  }
+    if (!obj.events) {
+      obj.events = []
+    }
 
-}(window));
+    obj.events.push({
+      event: e,
+      time: Date.now()
+    })
+
+    if (obj.hook) {
+      obj.hook(e, id, type)
+    }
+
+    var all = store['*']
+    if (all && typeof all.hook === 'function') {
+      all.hook(e, id, type)
+    }
+  })
+}
+
+export { trigger, gather }

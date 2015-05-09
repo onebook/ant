@@ -7,34 +7,37 @@
 <body>
   <div ant-click="div-1">
     <span ant-mouseout="span-1">
-      <p>1</p>
-      <p ant-click="p-1">2</p>
-    </span>
-    <span>
-      <p ant-click="p-2">3</p>
+      <p>span-1</p>
+      <p ant-click="p-1">p-1</p>
+      <p ant-click="p-2">p-2</p>
     </span>
     <span ant-mouseout="span-2">
-      <p>4</p>
+      <p>span-2</p>
     </span>
   </div>
-  <script src="../ant.js"></script>
+  <script src="../build/example/index.js"></script>
   <script>
-    ant.trigger('p-1', function(event) {
-      console.log('trigger', event);
+    trigger('p-1', function(event) {
+      console.log('trigger p-1', event.target)
 
-      var events = ant.gather('p-1');
-      console.log('count: %s', events.length);
-    });
+      var events = gather('p-1')
+      console.log('count: %s', events.length)
+    })
 
-    ant.all = function(event, id) {
-      console.log('all', id);
-    };
+    trigger('*', function(event, id, type) {
+      console.log('*', id, type)
+    })
   </script>
   <style type="text/css">
     span, p {
       display: block;
     }
+    span {
+      border: solid 1px red;
+      width: 100px;
+    }
     p {
+      border: solid 1px orange;
       width: 40px;
       height: 40px;
     }
